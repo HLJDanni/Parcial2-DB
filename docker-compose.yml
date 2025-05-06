@@ -1,0 +1,59 @@
+
+services:
+  oracle-db:
+    image: gvenzl/oracle-xe:21-slim
+    container_name: oracle_guatemala
+    ports:
+      - "1522:1521"
+    environment:
+      - ORACLE_PASSWORD=oracle123
+     # - APP_USER=app_user
+      #- APP_USER_PASSWORD=oracle123
+    volumes:
+      - ./sql/init_oracle.sql:/container-entrypoint-initdb.d/init_oracle.sql
+
+  mysql-mexico:
+    image: mysql:8.0
+    container_name: mysql_mexico
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: legaldb
+    volumes:
+      - ./sql/init_mysql_mexico.sql:/docker-entrypoint-initdb.d/init_mysql_mexico.sql
+
+  mysql-salvador:
+    image: mysql:8.0
+    container_name: mysql_salvador
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: legaldb
+    volumes:
+      - ./sql/init_mysql_salvador.sql:/docker-entrypoint-initdb.d/init_mysql_salvador.sql
+
+  api:
+    build: ./api
+    container_name: flask_api
+    ports:
+      - "5000:5000"
+    depends_on:
+      - oracle-db
+      - mysql-mexico
+      - mysql-salvador
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=app.py
+      - DB_ORACLE_HOST=oracle-db
+      - DB_MYSQL_MEXICO_HOST=mysql-mexico
+      - DB_MYSQL_SALVADOR_HOST=mysql-salvador
+    volumes:
+      - ./api:/app
+    networks:
+      - legal_network
+
+networks:
+  legal_network:
+    driver: bridge
