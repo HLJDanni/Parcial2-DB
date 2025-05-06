@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from db_oracle import get_oracle_data, get_cliente_data, get_procurador_data, get_audiencia_data
 from db_mysql_mexico import get_mexico_data
 from db_mysql_salvador import get_salvador_data
@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.config['DEBUG'] = True  # Activa el modo de depuración
 @app.route("/")
 def index():
-    return "Microservicio Flask para replicación distribuida"
+    return render_template (index.html)
 
 @app.route("/replicados", methods=["GET"])
 def get_all_data():
