@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Socios Legales S.A. | Gestión Legal</title>
+    <title>Socios Legales S.A. | Gestión de Asuntos</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="StyleSheet.css">
     <style>
         :root {
             --primary: #2c3e50;
@@ -306,22 +307,89 @@
             border-radius: 2px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
+        /* Asegura que la modal sea visible */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0; top: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.3);
+                   }
+        .modal-content {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            min-width: 300px;
+            max-width: 400px;
+            width: 90vw;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; }
+        .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem; }
+        .form-group { margin-bottom: 0.8rem; }
+        .form-group label { display: block; margin-bottom: 0.2rem; }
+        .form-control, select, textarea, input[type="date"], input[type="text"] {
+            width: 100%; padding: 0.4rem; border: 1px solid #bbb; border-radius: 4px;
+        }
+        .action-btn { background: none; border: none; cursor: pointer; }
+        .edit-btn { color: #0066cc; }
+        .delete-btn { color: #cc3333; }
+        .status { padding: 0.2em 0.5em; border-radius: 0.3em; font-size: 0.9em; }
+        .status-tramite { background: #e3f1ff; color: #2466b3; }
+        .status-finalizado { background: #e3ffe7; color: #257a3e; }
+        .status-amparo { background: #fff7e3; color: #b38724; }
+        @media (max-width: 700px) {
+            .modal-content { min-width: 0; max-width: 98vw; }
+            .main-content { padding: 0.5rem; }
+            .sidebar { width: 100px; }
+        }
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 0.5rem; border-bottom: 1px solid #ddd; }
+        th { background: #f5f5f5; }
+
+        /* Estilo para los botones modernos */
+        .button-container {
+            display: flex;
+            justify-content: center; /* Centra los botones */
+            margin: 20px 0;
+        }
+
+        .modern-button {
+            background-color: #0066cc; /* Color de fondo */
+            color: white; /* Color del texto */
+            border: none; /* Sin bordes */
+            border-radius: 5px; /* Bordes redondeados */
+            padding: 10px 20px; /* Espaciado interior */
+            cursor: pointer; /* Cambia el cursor al pasar el ratón */
+            font-size: 1em; /* Tamaño de la fuente */
+            transition: background-color 0.3s; /* Transición suave para el color de fondo */
+            display: flex; /* Usar flex para alinear ícono y texto */
+            align-items: center; /* Centrar verticalmente el contenido */
+            gap: 8px; /* Espacio entre ícono y texto */
+        }
+
+        .modern-button:hover {
+            background-color: #004d99; /* Color de fondo al pasar el ratón */
+        }
+
+        /* Estilo para eliminar subrayado y color azul del enlace */
+        .modern-button a {
+            color: white; /* Mantener el color blanco del texto */
+            text-decoration: none; /* Eliminar subrayado */
+        }
+
+        .modern-button a:visited, .modern-button a:active {
+            color: white; /* Mantener el color blanco del texto */
+        }
     </style>
 </head>
 <body>
-    <!-- Mobile menu toggle button -->
-    <button class="menu-toggle" id="menuToggle" style="display: none;">
-        <i class="fas fa-bars"></i>
-    </button>
-
     <!-- Sidebar Navigation -->
-    <nav class="sidebar" id="sidebar">
-        <div class="logo">
-            <h2>Socios Legales S.A.</h2>
-            <p>Gestión Legal Distribuida</p>
-        </div>
-
-        <div class="nav-menu">
+    <div class="nav-menu">
             <a href="index.html" class="nav-item active">
     <i class="fas fa-home"></i> <!-- Ícono de Casa -->
     Inicio
@@ -339,57 +407,30 @@
         Sucursal Salvador
     </a>
 </div>
-    </nav>
 
     <!-- Main Content -->
     <main class="main-content">
-        <div class="welcome-card">
-            <h1>Bienvenido al Sistema de Gestión Legal</h1>
-            <h2>Plataforma Centralizada de Expedientes</h2>
+        <div class="header">
+            <h1>Registros de Sede Guatemala</h1>
+        </div>
 
-            <p>Desarrollaremos un sistema centralizado para gestionar expedientes legales, clientes, procuradores y audiencias en nuestras sedes de Guatemala (Windows), México (Linux VM) y El Salvador (otro OS VM), con capacidad de expansión.</p>
+        <!-- Botones Modernos -->
+        <div class="button-container">
+            <button class="modern-button" onclick="location.href='Clientes.html'">
+                <i class="fas fa-users"></i> Clientes
+            </button>
+            <button class="modern-button" onclick="location.href='Procuradores.html'">
+                <i class="fas fa-user-friends"></i> Procuradores
+            </button>
+            <button class="modern-button" onclick="location.href='Abogados.html'">
+                <i class="fas fa-gavel"></i> Abogados
+            </button>
 
-            <p>El sistema registrará cada asunto con su estado, fechas clave, datos de clientes y abogados (identificados por DNI), permitiendo seguimiento de audiencias y asignación de múltiples procuradores, mejorando la eficiencia operativa y trazabilidad en todas las oficinas.</p>
+                <button class="modern-button" onclick="location.href='AS_Guatemala.html'">
+                  <i class="fas fa-folder-open"></i> Asuntos
+                </button>
+
         </div>
     </main>
-
-    <script>
-        // Dark mode support
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.classList.add('dark');
-        }
-
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-            if (event.matches) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        });
-
-        // Mobile menu toggle
-        const mediaQuery = window.matchMedia('(max-width: 768px)');
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebar = document.getElementById('sidebar');
-
-        function handleScreenSizeChange(e) {
-            if (e.matches) {
-                // Mobile view
-                menuToggle.style.display = 'block';
-                sidebar.classList.remove('open');
-            } else {
-                // Desktop view
-                menuToggle.style.display = 'none';
-                sidebar.classList.remove('open');
-            }
-        }
-
-        mediaQuery.addEventListener('change', handleScreenSizeChange);
-        handleScreenSizeChange(mediaQuery);
-
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-        });
-    </script>
 </body>
 </html>

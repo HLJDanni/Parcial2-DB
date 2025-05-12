@@ -7,10 +7,10 @@ services:
       - "1522:1521"
     environment:
       - ORACLE_PASSWORD=oracle123
-     # - APP_USER=app_user
-      #- APP_USER_PASSWORD=oracle123
     volumes:
       - ./sql/init_oracle.sql:/container-entrypoint-initdb.d/init_oracle.sql
+    networks:
+      - legal_network
 
   mysql-mexico:
     image: mysql:8.0
@@ -19,9 +19,11 @@ services:
       - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: legaldb
+      MYSQL_DATABASE: sucursal_mexico
     volumes:
       - ./sql/init_mysql_mexico.sql:/docker-entrypoint-initdb.d/init_mysql_mexico.sql
+    networks:
+      - legal_network
 
   mysql-salvador:
     image: mysql:8.0
@@ -30,9 +32,11 @@ services:
       - "3308:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: legaldb
+      MYSQL_DATABASE: sucursal_elsalvador
     volumes:
       - ./sql/init_mysql_salvador.sql:/docker-entrypoint-initdb.d/init_mysql_salvador.sql
+    networks:
+      - legal_network
 
   api:
     build: ./api
@@ -51,6 +55,7 @@ services:
       - DB_MYSQL_SALVADOR_HOST=mysql-salvador
     volumes:
       - ./api:/app
+    command: [ "sh", "-c", "python replicador.py & flask run --host=0.0.0.0" ]
     networks:
       - legal_network
 

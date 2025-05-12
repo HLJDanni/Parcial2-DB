@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Socios Legales S.A. | Gestín de Asuntos</title>
+  <title>Socios Legales S.A. | Gestión de Clientes</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
@@ -193,9 +193,11 @@
       <p>Guatemala</p>
     </div>
     <div class="nav-menu">
-      <a href="index.html" class="nav-item active"><i class="fas fa-home"></i> Inicio</a>
-      <!-- otras sedes -->
-      <a href="SedeCentral.html" class="nav-item ">
+            <a href="index.html" class="nav-item active">
+    <i class="fas fa-home"></i> <!-- Ícono de Casa -->
+    Inicio
+    </a>
+    <a href="SedeCentral.html" class="nav-item ">
         <img src="https://flagcdn.com/w20/gt.png" class="flag-icon" alt="Guatemala">
         Sede Central
     </a>
@@ -207,42 +209,35 @@
         <img src="https://flagcdn.com/w20/sv.png" class="flag-icon" alt="El Salvador">
         Sucursal Salvador
     </a>
-    </div>
+</div>
   </nav>
 
   <main class="main-content">
     <div class="header">
-      <h1>Asuntos Guatemala</h1>
-      <button class="btn btn-primary" id="addAsuntoBtn"><i class="fas fa-plus"></i> Nuevo Asunto</button>
+      <h1>Clientes de Guatemala</h1>
+      <button class="btn btn-primary" id="addClienteBtn">
+        <i class="fas fa-plus"></i> Nuevo Cliente
+      </button>
     </div>
 
     <div class="form-container" id="formContainer">
-      <form id="asuntoForm">
-        <input type="hidden" id="expediente_id" />
+      <form id="clienteForm">
+        <input type="hidden" id="clienteId" />
         <div class="form-group">
-          <label for="cliente">Cliente</label>
-          <select id="cliente" class="form-control" required></select>
+          <label for="nombre">Nombre</label>
+          <input type="text" id="nombre" required />
         </div>
         <div class="form-group">
-          <label for="descripcion">Descripción</label>
-          <textarea id="descripcion" class="form-control" required></textarea>
+          <label for="direccion">Dirección</label>
+          <input type="text" id="direccion" required />
         </div>
         <div class="form-group">
-          <label for="estado">Estado</label>
-          <select id="estado" class="form-control" required>
-            <option value="">Selecciona estado</option>
-            <option value="Activo">Activo</option>
-            <option value="Pendiente">Pendiente</option>
-            <option value="Cerrado">Cerrado</option>
-          </select>
+          <label for="telefono">Teléfono</label>
+          <input type="text" id="telefono" required />
         </div>
         <div class="form-group">
-          <label for="fecha_inicio">Fecha de Inicio</label>
-          <input type="date" id="fecha_inicio" class="form-control" required />
-        </div>
-        <div class="form-group">
-          <label for="fecha_final">Fecha Final</label>
-          <input type="date" id="fecha_final" class="form-control" required />
+          <label for="correo">Correo</label>
+          <input type="email" id="correo" required />
         </div>
         <button type="submit" class="btn btn-primary">Guardar</button>
         <button type="button" class="btn btn-secondary" onclick="toggleForm()">Cancelar</button>
@@ -250,16 +245,14 @@
     </div>
 
     <div class="card">
-      <h2 style="padding: 1rem">Lista de Asuntos</h2>
-      <table id="asuntosTable">
+      <h2 style="padding: 1rem">Lista de Clientes</h2>
+      <table id="clientsTable">
         <thead>
           <tr>
-            <th>Expediente</th>
-            <th>Cliente</th>
-            <th>Descripción</th>
-            <th>Estado</th>
-            <th>Inicio</th>
-            <th>Final</th>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Teléfono</th>
+            <th>Correo</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -270,12 +263,12 @@
 
   <script>
     const formContainer = document.getElementById('formContainer');
-    const form = document.getElementById('asuntoForm');
-    const idInput = document.getElementById('expediente_id');
+    const form = document.getElementById('clienteForm');
+    const clienteIdInput = document.getElementById('clienteId');
 
-    document.getElementById('addAsuntoBtn').onclick = () => {
+    document.getElementById('addClienteBtn').onclick = () => {
       form.reset();
-      idInput.value = '';
+      clienteIdInput.value = '';
       toggleForm(true);
     };
 
@@ -288,84 +281,67 @@
       fetch('/api/clientes')
         .then(res => res.json())
         .then(clientes => {
-          const select = document.getElementById("cliente");
-          select.innerHTML = '<option value="">Selecciona un cliente</option>';
-          clientes.forEach(c => {
-            const option = document.createElement("option");
-            option.value = c.cliente_id;
-            option.textContent = c.nombre;
-            select.appendChild(option);
-          });
-        });
-    }
-
-    function fetchAsuntos() {
-      fetch('/api/asuntos')
-        .then(res => res.json())
-        .then(asuntos => {
-          const tbody = document.querySelector('#asuntosTable tbody');
+          const tbody = document.querySelector('#clientsTable tbody');
           tbody.innerHTML = '';
-          asuntos.forEach(a => {
+          clientes.forEach(cliente => {
             const row = document.createElement('tr');
             row.innerHTML = `
-              <td>${a.expediente_id}</td>
-              <td>${a.cliente_nombre || 'N/A'}</td>
-              <td>${a.descripcion}</td>
-              <td>${a.estado}</td>
-              <td>${a.fecha_inicio}</td>
-              <td>${a.fecha_final}</td>
+              <td>${cliente.nombre}</td>
+              <td>${cliente.direccion}</td>
+              <td>${cliente.telefono}</td>
+              <td>${cliente.correo}</td>
               <td class="actions">
-                <button class="btn btn-primary" onclick='editAsunto(${JSON.stringify(a)})'>✏️</button>
-                <button class="btn btn-danger" onclick="deleteAsunto(${a.expediente_id})">🗑️</button>
-              </td>
+  <button class="btn btn-primary" onclick='editCliente(${JSON.stringify(cliente)})'>✏️</button>
+  <button class="btn btn-danger" onclick="deleteCliente(${cliente.cliente_id})">🗑️</button>
+</td>
+
             `;
             tbody.appendChild(row);
           });
         });
     }
 
-    function editAsunto(a) {
-      idInput.value = a.expediente_id;
-      document.getElementById('cliente').value = a.cliente_id;
-      document.getElementById('descripcion').value = a.descripcion;
-      document.getElementById('estado').value = a.estado;
-      document.getElementById('fecha_inicio').value = a.fecha_inicio;
-      document.getElementById('fecha_final').value = a.fecha_final;
+    function editCliente(cliente) {
+      clienteIdInput.value = cliente.cliente_id;
+
+      document.getElementById('nombre').value = cliente.nombre;
+      document.getElementById('direccion').value = cliente.direccion;
+      document.getElementById('telefono').value = cliente.telefono;
+      document.getElementById('correo').value = cliente.correo;
       toggleForm(true);
     }
 
-    function deleteAsunto(id) {
-      if (confirm('¿Deseas eliminar este asunto?')) {
-        fetch(`/api/asuntos/${id}`, { method: 'DELETE' })
-          .then(() => fetchAsuntos());
+    function deleteCliente(id) {
+      if (confirm('¿Deseas eliminar este cliente?')) {
+        fetch(`/api/clientes/<int:cliente_id>${cliente.cliente_id}`, {
+          method: 'DELETE'
+        }).then(() => fetchClientes());
       }
     }
 
-    form.addEventListener('submit', e => {
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const asunto = {
-        cliente_id: document.getElementById('cliente').value,
-        descripcion: document.getElementById('descripcion').value,
-        estado: document.getElementById('estado').value,
-        fecha_inicio: document.getElementById('fecha_inicio').value,
-        fecha_final: document.getElementById('fecha_final').value
+      const cliente = {
+        nombre: document.getElementById('nombre').value,
+        direccion: document.getElementById('direccion').value,
+        telefono: document.getElementById('telefono').value,
+        correo: document.getElementById('correo').value
       };
-      const id = idInput.value;
-      fetch(id ? `/api/asuntos/${id}` : '/api/asuntos', {
+      const id = clienteIdInput.value;
+
+      fetch(id ? `/api/clientes/${id}` : '/api/clientes', {
         method: id ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(asunto)
-      })
-        .then(() => {
-          fetchAsuntos();
-          form.reset();
-          toggleForm(false);
-        });
+        body: JSON.stringify(cliente)
+      }).then(() => {
+        fetchClientes();
+        form.reset();
+        toggleForm(false);
+      });
     });
 
     fetchClientes();
-    fetchAsuntos();
-    setInterval(fetchAsuntos, 5000);
+    setInterval(fetchClientes, 5000);
   </script>
 </body>
 </html>
