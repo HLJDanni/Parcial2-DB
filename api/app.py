@@ -327,42 +327,39 @@ def execute_mysql_query(config, query):
     return results
 
 # Rutas para cada tabla combinada
+@app.route('/clientes-globales')
+def clientes_globales():
+    return render_template('clientesGlobales.html')
+
 @app.route('/combined/clientes')
 def combined_clientes():
     # Consulta Oracle
     oracle_query = """
-                   SELECT 'Sede Central' as fuente, cliente_id, nombre, direccion, telefono, correo,
-                   TO_CHAR(LAST_MODIFIED, 'YYYY-MM-DD HH24:MI:SS') as ultima_modificacion
-                   FROM clientes
-                   """
+        SELECT 'Sede Central' as fuente, cliente_id, nombre, direccion, telefono, correo,
+        TO_CHAR(LAST_MODIFIED, 'YYYY-MM-DD HH24:MI:SS') as ultima_modificacion
+        FROM clientes
+    """
     oracle_data = execute_oracle_query(oracle_query)
 
     # Consulta MySQL El Salvador
     mysql_sv_query = """
-                     SELECT 'Sucursal El Salvador' as fuente, cliente_id, nombre, direccion, telefono, correo,
-                     DATE_FORMAT(LAST_MODIFIED, '%Y-%m-%d %H:%i:%s') as ultima_modificacion
-                     FROM clientes
-                     """
+        SELECT 'Sucursal El Salvador' as fuente, cliente_id, nombre, direccion, telefono, correo,
+        DATE_FORMAT(LAST_MODIFIED, '%Y-%m-%d %H:%i:%s') as ultima_modificacion
+        FROM clientes
+    """
     mysql_sv_data = execute_mysql_query(mysql_config_salvador, mysql_sv_query)
 
     # Consulta MySQL México
     mysql_mx_query = """
-                     SELECT 'Sucursal México' as fuente, cliente_id, nombre, direccion, telefono, correo,
-                     DATE_FORMAT(LAST_MODIFIED, '%Y-%m-%d %H:%i:%s') as ultima_modificacion
-                     FROM clientes
-                     """
+        SELECT 'Sucursal México' as fuente, cliente_id, nombre, direccion, telefono, correo,
+        DATE_FORMAT(LAST_MODIFIED, '%Y-%m-%d %H:%i:%s') as ultima_modificacion
+        FROM clientes
+    """
     mysql_mx_data = execute_mysql_query(mysql_config_mexico, mysql_mx_query)
 
+    # Combinar todo
     combined_data = oracle_data + mysql_sv_data + mysql_mx_data
-    return render_template('clientesGlobales.html',
-                           data=combined_data,
-                           title="Clientes Combinados",
-                           columns=["fuente", "cliente_id", "nombre", "direccion", "telefono", "correo", "ultima_modificacion"],
-                           headers=["Fuente", "ID", "Nombre", "Dirección", "Teléfono", "Correo", "Última Modificación"])
-
-
-
-
+    return jsonify(combined_data)
 
 
 
