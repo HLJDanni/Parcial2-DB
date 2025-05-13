@@ -385,16 +385,65 @@
         .modern-button a:visited, .modern-button a:active {
             color: white; /* Mantener el color blanco del texto */
         }
+
+        /* Estilos generales para el main-content */
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Esto centra horizontalmente los elementos hijos */
+        padding: 20px;
+        width: 100%;
+    }
+
+    /* Estilos para el contenedor de botones */
+    .button-container {
+        display: flex;
+        flex-wrap: wrap; /* Permite que los botones se ajusten en pantallas pequeñas */
+        justify-content: center; /* Centra los botones horizontalmente */
+        gap: 20px; /* Espacio entre botones */
+        width: 100%;
+        max-width: 1200px; /* Ancho máximo para evitar que se expandan demasiado */
+        margin-top: 20px;
+    }
+
+    /* Estilos para los botones modernos */
+    .modern-button {
+        min-width: 200px; /* Ancho mínimo para mantener consistencia */
+        padding: 15px 25px;
+        /* Resto de tus estilos para los botones... */
+    }
+
+    /* Para pantallas pequeñas (responsive) */
+    @media (max-width: 768px) {
+        .button-container {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .modern-button {
+            width: 80%;
+        }
+    }
     </style>
 </head>
 <body>
+    <button class="menu-toggle" id="menuToggle" style="display: none;">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <!-- Sidebar Navigation -->
-    <div class="nav-menu">
-            <a href="index.html" class="nav-item active">
+    <nav class="sidebar" id="sidebar">
+        <div class="logo">
+            <h2>Socios Legales S.A.</h2>
+            <p>Gestión Legal Distribuida</p>
+        </div>
+
+        <div class="nav-menu">
+            <a href="index.html" class="nav-item ">
     <i class="fas fa-home"></i> <!-- Ícono de Casa -->
     Inicio
 </a>
-    <a href="SedeCentral.html" class="nav-item ">
+    <a href="SedeCentral.html" class="nav-item active">
         <img src="https://flagcdn.com/w20/gt.png" class="flag-icon" alt="Guatemala">
         Sede Central
     </a>
@@ -407,6 +456,7 @@
         Sucursal Salvador
     </a>
 </div>
+    </nav>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -429,6 +479,10 @@
                 <button class="modern-button" onclick="location.href='AS_Guatemala.html'">
                   <i class="fas fa-folder-open"></i> Asuntos
                 </button>
+
+            <button class="modern-button" onclick="location.href='Audiencias.html'">
+                <i class="fas fa-scale-balanced"></i> Audiencias
+            </button>
 
         </div>
     </main>

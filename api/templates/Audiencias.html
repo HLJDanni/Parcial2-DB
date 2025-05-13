@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socios Legales S.A. | Gestión de Audiencias</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #34495e;
+      --accent: #3498db;
+      --light: #ecf0f1;
+      --text: #2c3e50;
+      --text-light: #7f8c8d;
+      --success: #27ae60;
+      --warning: #f39c12;
+      --danger: #e74c3c;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: white;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+      padding: 2rem 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo {
+      padding: 0 1.5rem 2rem;
+      border-bottom: 1px solid #eee;
+      margin-bottom: 1.5rem;
+    }
+
+    .logo h2 {
+      margin: 0;
+      font-weight: 600;
+      color: var(--primary);
+      font-size: 1.2rem;
+    }
+
+    .nav-menu {
+      flex-grow: 1;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1.5rem;
+      margin: 0.25rem 0;
+      color: var(--text-light);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .nav-item:hover {
+      color: var(--primary);
+      background-color: #f5f7fa;
+    }
+
+    .nav-item.active {
+      color: var(--accent);
+      border-left: 3px solid var(--accent);
+      background-color: #f5f9ff;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 2rem 3rem;
+      max-width: 1200px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-weight: 600;
+      color: var(--primary);
+      margin: 0;
+    }
+
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      font-size: 0.9rem;
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    .btn-secondary {
+      background-color: var(--light);
+      color: var(--text);
+      margin-left: 1rem;
+    }
+
+    .btn-danger {
+      background-color: var(--danger);
+      color: white;
+    }
+
+    .card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      background-color: #f8f9fa;
+      font-weight: 500;
+      color: var(--secondary);
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+    }
+
+    tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .form-container {
+      display: none;
+      margin-bottom: 2rem;
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .actions button {
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="logo">
+      <h2>Socios Legales S.A.</h2>
+      <p>Guatemala</p>
+    </div>
+    <div class="nav-menu">
+      <a href="index.html" class="nav-item active"><i class="fas fa-home"></i> Inicio</a>
+      <a href="SedeCentral.html" class="nav-item"><img src="https://flagcdn.com/w20/gt.png" class="flag-icon" alt="Guatemala"> Sede Central</a>
+      <a href="SedeMéxico.html" class="nav-item"><img src="https://flagcdn.com/w20/mx.png" class="flag-icon" alt="México"> Sucursal México</a>
+      <a href="SedeElSalvador.html" class="nav-item"><img src="https://flagcdn.com/w20/sv.png" class="flag-icon" alt="El Salvador"> Sucursal Salvador</a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="header">
+      <h1>Audiencias</h1>
+      <button class="btn btn-primary" onclick="showForm()">Nueva Audiencia</button>
+    </div>
+
+    <div class="form-container" id="formContainer">
+      <form id="audienciaForm">
+        <input type="hidden" id="audiencia_id">
+        <div class="form-group">
+          <label for="expediente_id">Expediente ID</label>
+          <input type="number" id="expediente_id" required>
+        </div>
+        <div class="form-group">
+          <label for="abogado_id">Abogado ID</label>
+          <input type="number" id="abogado_id" required>
+        </div>
+        <div class="form-group">
+          <label for="procurador_id">Procurador ID (opcional)</label>
+          <input type="number" id="procurador_id">
+        </div>
+        <div class="form-group">
+          <label for="fecha_audiencia">Fecha y Hora</label>
+          <input type="datetime-local" id="fecha_audiencia" required>
+        </div>
+        <div class="form-group">
+          <label for="tipo">Tipo</label>
+          <input type="text" id="tipo" required>
+        </div>
+        <div class="form-group">
+          <label for="resultado">Resultado</label>
+          <input type="text" id="resultado">
+        </div>
+        <div class="form-group">
+          <label for="observaciones">Observaciones</label>
+          <input type="text" id="observaciones">
+        </div>
+        <button class="btn btn-primary" type="submit">Guardar</button>
+        <button class="btn btn-secondary" type="button" onclick="showForm(false)">Cancelar</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2 style="padding: 1rem">Lista de Audiencias</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th><th>Expediente</th><th>Abogado</th><th>Procurador</th>
+            <th>Fecha</th><th>Tipo</th><th>Resultado</th><th>Observaciones</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="audienciaTable"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    function showForm(show = true) {
+      document.getElementById('formContainer').style.display = show ? 'block' : 'none';
+    }
+
+    document.getElementById('audienciaForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        expediente_id: parseInt(document.getElementById('expediente_id').value),
+        abogado_id: parseInt(document.getElementById('abogado_id').value),
+        procurador_id: document.getElementById('procurador_id').value || null,
+        fecha_audiencia: document.getElementById('fecha_audiencia').value,
+        tipo: document.getElementById('tipo').value,
+        resultado: document.getElementById('resultado').value,
+        observaciones: document.getElementById('observaciones').value
+      };
+
+      const id = document.getElementById('audiencia_id').value;
+      const method = id ? 'PUT' : 'POST';
+      const url = id ? `/api/audiencias/${id}` : '/api/audiencias';
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      showForm(false);
+      loadAudiencias();
+      e.target.reset();
+    });
+
+    async function loadAudiencias() {
+      const res = await fetch('/api/audiencias');
+      const data = await res.json();
+      const tbody = document.getElementById('audienciaTable');
+      tbody.innerHTML = '';
+      data.forEach(a => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${a.audiencia_id}</td>
+          <td>${a.expediente_id}</td>
+          <td>${a.abogado_id}</td>
+          <td>${a.procurador_id || ''}</td>
+          <td>${a.fecha_audiencia}</td>
+          <td>${a.tipo}</td>
+          <td>${a.resultado || ''}</td>
+          <td>${a.observaciones || ''}</td>
+          <td class="actions">
+            <button class="btn btn-primary" onclick='edit(${JSON.stringify(a)})'>✏️</button>
+            <button class="btn btn-danger" onclick='remove(${a.audiencia_id})'>🗑️</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function edit(a) {
+      document.getElementById('audiencia_id').value = a.audiencia_id;
+      document.getElementById('expediente_id').value = a.expediente_id;
+      document.getElementById('abogado_id').value = a.abogado_id;
+      document.getElementById('procurador_id').value = a.procurador_id || '';
+      document.getElementById('fecha_audiencia').value = a.fecha_audiencia.replace(' ', 'T');
+      document.getElementById('tipo').value = a.tipo;
+      document.getElementById('resultado').value = a.resultado || '';
+      document.getElementById('observaciones').value = a.observaciones || '';
+      showForm(true);
+    }
+
+    async function remove(id) {
+      if (confirm('¿Eliminar esta audiencia?')) {
+        await fetch(`/api/audiencias/${id}`, { method: 'DELETE' });
+        loadAudiencias();
+      }
+    }
+
+    loadAudiencias();
+  </script>
+</body>
+</html>
