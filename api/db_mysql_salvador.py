@@ -1,20 +1,16 @@
-import mysql.connector
+import os
 
-def get_salvador_data():
-    try:
-        conn = mysql.connector.connect(
-            host="mysql_salvador",
-            user="root",
-            password="root",
-            database="legaldb",
-            port=3306
-        )
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM asuntos")
-        rows = cursor.fetchall()
-        return [dict(zip(cursor.column_names, row)) for row in rows]
-    except Exception as e:
-        return {"error": str(e)}
-    finally:
-        if 'conn' in locals() and conn.is_connected():
-            conn.close()
+# Configuración de MySQL para El Salvador
+MYSQL_USER_SALVADOR = os.getenv("MYSQL_USER_SALVADOR", "root")
+MYSQL_PASSWORD_SALVADOR = os.getenv("MYSQL_PASSWORD_SALVADOR", "root")
+MYSQL_HOST_SALVADOR = os.getenv("DB_MYSQL_SALVADOR_HOST", "mysql_salvador")
+MYSQL_DATABASE_SALVADOR = os.getenv("MYSQL_DATABASE_SALVADOR", "sucursal_elsalvador")
+
+
+# Conexión para El Salvador
+mysql_config_salvador = {
+    'host': MYSQL_HOST_SALVADOR,
+    'user': MYSQL_USER_SALVADOR,
+    'password': MYSQL_PASSWORD_SALVADOR,
+    'database': MYSQL_DATABASE_SALVADOR
+}

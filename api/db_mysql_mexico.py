@@ -1,20 +1,18 @@
-import mysql.connector
+import os
 
-def get_mexico_data():
-    try:
-        conn = mysql.connector.connect(
-            host="mysql_mexico",
-            user="root",
-            password="root",
-            database="legaldb",
-            port=3306
-        )
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM asuntos")
-        rows = cursor.fetchall()
-        return [dict(zip(cursor.column_names, row)) for row in rows]
-    except Exception as e:
-        return {"error": str(e)}
-    finally:
-        if 'conn' in locals() and conn.is_connected():
-            conn.close()
+# Configuración de MySQL para México
+MYSQL_USER_MEXICO = os.getenv("MYSQL_USER_MEXICO", "root")
+MYSQL_PASSWORD_MEXICO = os.getenv("MYSQL_PASSWORD_MEXICO", "root")
+MYSQL_HOST_MEXICO = os.getenv("DB_MYSQL_MEXICO_HOST", "mysql-mexico")
+MYSQL_DATABASE_MEXICO = os.getenv("MYSQL_DATABASE_MEXICO", "sucursal_mexico")
+
+
+# Conexión para México
+mysql_config_mexico = {
+    'host': MYSQL_HOST_MEXICO,
+    'user': MYSQL_USER_MEXICO,
+    'password': MYSQL_PASSWORD_MEXICO,
+    'database': MYSQL_DATABASE_MEXICO
+}
+
+

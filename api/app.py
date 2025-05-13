@@ -1,4 +1,6 @@
 import oracledb
+
+import mysql.connector
 from flask import Flask, jsonify, request, render_template
 from db_oracle import (
     get_asuntos, get_asunto, create_asunto, update_asunto, delete_asunto, get_cliente, create_cliente, update_cliente,
@@ -246,6 +248,265 @@ def api_update_audiencia(audiencia_id):
 def api_delete_audiencia(audiencia_id):
     return jsonify(delete_audiencia(audiencia_id))
 
+
+
+
+#FUNCI[ON UNION
+
+@app.route('/clientesGlobales.html')
+def unionclientes_page():
+    return render_template("clientesGlobales.html")
+
+@app.route('/abogadosGlobales.html')
+def unionabogados_page():
+    return render_template("abogadosGlobales.html")
+
+@app.route('/asuntosGloables.html')
+def unionasuntos_page():
+    return render_template("asuntosGlobales.html")
+
+@app.route('/procuradoresGlobales.html')
+def unionprocurados_page():
+    return render_template("procuradoresGlobales.html")
+
+@app.route('/audienciasGlobales.html')
+def unionaudiencias_page():
+    return render_template("audienciasGlobales.html")
+
+@app.route('/combined_tables.html')
+def union_page():
+    return render_template("combined_tables.html")
+
+
+
+
+# Configuración de conexiones (importa tus configuraciones desde los respectivos archivos)
+from db_mysql_mexico import mysql_config_mexico
+from db_mysql_salvador import mysql_config_salvador
+import os
+ORACLE_USER = os.getenv("ORACLE_USER", "app_user")
+ORACLE_PASSWORD = os.getenv("ORACLE_PASSWORD", "oracle123")
+ORACLE_HOST = os.getenv("DB_ORACLE_HOST", "oracle-db")
+ORACLE_PORT = os.getenv("DB_ORACLE_PORT", "1521")
+ORACLE_SERVICE = os.getenv("ORACLE_SERVICE", "XE")
+
+DSN = f"{ORACLE_HOST}:{ORACLE_PORT}/{ORACLE_SERVICE}"
+# Definición de funciones para ejecutar consultas
+def execute_oracle_query(query):
+    try:
+        conn = oracledb.connect(
+            user=ORACLE_USER,
+            password=ORACLE_PASSWORD,
+            dsn=DSN
+        )
+        cursor = conn.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        cols = [d[0].lower() for d in cursor.description]
+        results = []
+        for row in rows:
+            row_dict = dict(zip(cols, row))
+            # Convierte CLOB a string si es necesario
+            if hasattr(row_dict.get('descripcion'), 'read'):
+                row_dict['descripcion'] = row_dict['descripcion'].read()
+            results.append(row_dict)
+        return results
+    except Exception as e:
+        return {"error": str(e)}
+    finally:
+        if 'conn' in locals():
+            conn.close()
+
+def execute_mysql_query(config, query):
+    conn = mysql.connector.connect(**config)
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(query)
+    results = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return results
+
+# Rutas para cada tabla combinada
+@app.route('/combined/clientes')
+def combined_clientes():
+    # Consulta Oracle
+    oracle_query = """
+                   SELECT 'Sede Central' as fuente, cliente_id, nombre, direccion, telefono, correo,
+                   TO_CHAR(LAST_MODIFIED, 'YYYY-MM-DD HH24:MI:SS') as ultima_modificacion
+                   FROM clientes
+                   """
+    oracle_data = execute_oracle_query(oracle_query)
+
+    # Consulta MySQL El Salvador
+    mysql_sv_query = """
+                     SELECT 'Sucursal El Salvador' as fuente, cliente_id, nombre, direccion, telefono, correo,
+                     DATE_FORMAT(LAST_MODIFIED, '%Y-%m-%d %H:%i:%s') as ultima_modificacion
+                     FROM clientes
+                     """
+    mysql_sv_data = execute_mysql_query(mysql_config_salvador, mysql_sv_query)
+
+    # Consulta MySQL México
+    mysql_mx_query = """
+                     SELECT 'Sucursal México' as fuente, cliente_id, nombre, direccion, telefono, correo,
+                     DATE_FORMAT(LAST_MODIFIED, '%Y-%m-%d %H:%i:%s') as ultima_modificacion
+                     FROM clientes
+                     """
+    mysql_mx_data = execute_mysql_query(mysql_config_mexico, mysql_mx_query)
+
+    combined_data = oracle_data + mysql_sv_data + mysql_mx_data
+    return render_template('clientesGlobales.html',
+                           data=combined_data,
+                           title="Clientes Combinados",
+                           columns=["fuente", "cliente_id", "nombre", "direccion", "telefono", "correo", "ultima_modificacion"],
+                           headers=["Fuente", "ID", "Nombre", "Dirección", "Teléfono", "Correo", "Última Modificación"])
+
+
+
+
+
+
+
+
+
+
+# Rutas para cada tabla combinada
+@app.route('/combined/procuradores')
+def combined_procuradores():
+    oracle_query = """
+                   SELECT 'Sede Central' as fuente, procurador_id, nombre, dni, telefono, correo,
+                   TO_CHAR(LAST_MODIFIED, 'YYYY-MM-DD HH24:MI:SS') as ultima_modificacion
+                   FROM procuradores
+                   """
+    oracle_data = execute_oracle_query(oracle_query)
+
+    mysql_sv_query = """
+                     SELECT 'Sucursal El Salvador' as fuente, procurador_id, nombre, dni, telefono, correo,
+                     DATE_FORMAT(LAST_MODIFIED, '%Y-%m-%d %H:%i:%s') as ultima_modificacion
+                     FROM procuradores
+                     """
+    mysql_sv_data = execute_mysql_query(mysql_config_salvador, mysql_sv_query)
+
+    mysql_mx_query = """
+                     SELECT 'Sucursal México' as fuente, procurador_id, nombre, dni, telefono, correo,
+                     DATE_FORMAT(LAST_MODIFIED, '%Y-%m-%d %H:%i:%s') as ultima_modificacion
+                     FROM procuradores
+                     """
+    mysql_mx_data = execute_mysql_query(mysql_config_mexico, mysql_mx_query)
+
+    combined_data = oracle_data + mysql_sv_data + mysql_mx_data
+    return render_template('procuradoresGlobales.html',
+                           data=combined_data,
+                           title="Procuradores Combinados",
+                           columns=["fuente", "procurador_id", "nombre", "dni", "telefono", "correo", "ultima_modificacion"],
+                           headers=["Fuente", "ID", "Nombre", "DNI", "Teléfono", "Correo", "Última Modificación"])
+
+@app.route('/combined/abogados')
+def combined_abogados():
+    oracle_query = """
+                   SELECT 'Sede Central' as fuente, abogado_id, nombre, dni, pais, correo,
+                   TO_CHAR(LAST_MODIFIED, 'YYYY-MM-DD HH24:MI:SS') as ultima_modificacion
+                   FROM abogados
+                   """
+    oracle_data = execute_oracle_query(oracle_query)
+
+    mysql_sv_query = """
+                     SELECT 'Sucursal El Salvador' as fuente, abogado_id, nombre, dni, pais, correo,
+                     DATE_FORMAT(LAST_MODIFIED, '%Y-%m-%d %H:%i:%s') as ultima_modificacion
+                     FROM abogados
+                     """
+    mysql_sv_data = execute_mysql_query(mysql_config_salvador, mysql_sv_query)
+
+    mysql_mx_query = """
+                     SELECT 'Sucursal México' as fuente, abogado_id, nombre, dni, pais, correo,
+                     DATE_FORMAT(LAST_MODIFIED, '%Y-%m-%d %H:%i:%s') as ultima_modificacion
+                     FROM abogados
+                     """
+    mysql_mx_data = execute_mysql_query(mysql_config_mexico, mysql_mx_query)
+
+    combined_data = oracle_data + mysql_sv_data + mysql_mx_data
+    return render_template('abogadosGlobales.html',
+                           data=combined_data,
+                           title="Abogados Combinados",
+                           columns=["fuente", "abogado_id", "nombre", "dni", "pais", "correo", "ultima_modificacion"],
+                           headers=["Fuente", "ID", "Nombre", "DNI", "País", "Correo", "Última Modificación"])
+
+@app.route('/combined/asuntos')
+def combined_asuntos():
+    oracle_query = """
+                   SELECT 'Sede Central' as fuente, expediente_id, cliente_id,
+                          SUBSTR(descripcion, 1, 100) || CASE WHEN LENGTH(descripcion) > 100 THEN '...' ELSE '' END as descripcion,
+                          estado, TO_CHAR(fecha_inicio, 'YYYY-MM-DD') as fecha_inicio,
+                          TO_CHAR(fecha_final, 'YYYY-MM-DD') as fecha_final,
+                          TO_CHAR(LAST_MODIFIED, 'YYYY-MM-DD HH24:MI:SS') as ultima_modificacion
+                   FROM asuntos
+                   """
+    oracle_data = execute_oracle_query(oracle_query)
+
+    mysql_sv_query = """
+                     SELECT 'Sucursal El Salvador' as fuente, expediente_id, cliente_id,
+                            CONCAT(SUBSTRING(descripcion, 1, 100), IF(LENGTH(descripcion) > 100, '...', '')) as descripcion,
+                            estado, DATE_FORMAT(fecha_inicio, '%Y-%m-%d') as fecha_inicio,
+                            DATE_FORMAT(fecha_final, '%Y-%m-%d') as fecha_final,
+                            DATE_FORMAT(LAST_MODIFIED, '%Y-%m-%d %H:%i:%s') as ultima_modificacion
+                     FROM asuntos
+                     """
+    mysql_sv_data = execute_mysql_query(mysql_config_salvador, mysql_sv_query)
+
+    mysql_mx_query = """
+                     SELECT 'Sucursal México' as fuente, expediente_id, cliente_id,
+                            CONCAT(SUBSTRING(descripcion, 1, 100), IF(LENGTH(descripcion) > 100, '...', '')) as descripcion,
+                            estado, DATE_FORMAT(fecha_inicio, '%Y-%m-%d') as fecha_inicio,
+                            DATE_FORMAT(fecha_final, '%Y-%m-%d') as fecha_final,
+                            DATE_FORMAT(LAST_MODIFIED, '%Y-%m-%d %H:%i:%s') as ultima_modificacion
+                     FROM asuntos
+                     """
+    mysql_mx_data = execute_mysql_query(mysql_config_mexico, mysql_mx_query)
+
+    combined_data = oracle_data + mysql_sv_data + mysql_mx_data
+    return render_template('asuntosGlobales.html',
+                           data=combined_data,
+                           title="Asuntos Combinados",
+                           columns=["fuente", "expediente_id", "cliente_id", "descripcion", "estado", "fecha_inicio", "fecha_final", "ultima_modificacion"],
+                           headers=["Fuente", "Expediente ID", "Cliente ID", "Descripción", "Estado", "Fecha Inicio", "Fecha Final", "Última Modificación"])
+
+@app.route('/combined/audiencias')
+def combined_audiencias():
+    oracle_query = """
+                   SELECT 'Sede Central' as fuente, audiencia_id, expediente_id, abogado_id, procurador_id,
+                          TO_CHAR(fecha_audiencia, 'YYYY-MM-DD HH24:MI:SS') as fecha_audiencia,
+                          tipo, resultado,
+                          SUBSTR(observaciones, 1, 50) || CASE WHEN LENGTH(observaciones) > 50 THEN '...' ELSE '' END as observaciones,
+                          TO_CHAR(LAST_MODIFIED, 'YYYY-MM-DD HH24:MI:SS') as ultima_modificacion
+                   FROM audiencia
+                   """
+    oracle_data = execute_oracle_query(oracle_query)
+
+    mysql_sv_query = """
+                     SELECT 'Sucursal El Salvador' as fuente, audiencia_id, expediente_id, abogado_id, procurador_id,
+                            DATE_FORMAT(fecha_audiencia, '%Y-%m-%d %H:%i:%s') as fecha_audiencia,
+                            tipo, resultado,
+                            CONCAT(SUBSTRING(observaciones, 1, 50), IF(LENGTH(observaciones) > 50, '...', '')) as observaciones,
+                            DATE_FORMAT(LAST_MODIFIED, '%Y-%m-%d %H:%i:%s') as ultima_modificacion
+                     FROM audiencia
+                     """
+    mysql_sv_data = execute_mysql_query(mysql_config_salvador, mysql_sv_query)
+
+    mysql_mx_query = """
+                     SELECT 'Sucursal México' as fuente, audiencia_id, expediente_id, abogado_id, procurador_id,
+                            DATE_FORMAT(fecha_audiencia, '%Y-%m-%d %H:%i:%s') as fecha_audiencia,
+                            tipo, resultado,
+                            CONCAT(SUBSTRING(observaciones, 1, 50), IF(LENGTH(observaciones) > 50, '...', '')) as observaciones,
+                            DATE_FORMAT(LAST_MODIFIED, '%Y-%m-%d %H:%i:%s') as ultima_modificacion
+                     FROM audiencia
+                     """
+    mysql_mx_data = execute_mysql_query(mysql_config_mexico, mysql_mx_query)
+
+    combined_data = oracle_data + mysql_sv_data + mysql_mx_data
+    return render_template('audienciasGlobales.html',
+                           data=combined_data,
+                           title="Audiencias Combinadas",
+                           columns=["fuente", "audiencia_id", "expediente_id", "abogado_id", "procurador_id", "fecha_audiencia", "tipo", "resultado", "observaciones", "ultima_modificacion"],
+                           headers=["Fuente", "Audiencia ID", "Expediente ID", "Abogado ID", "Procurador ID", "Fecha Audiencia", "Tipo", "Resultado", "Observaciones", "Última Modificación"])
 
 if __name__ == '__main__':
     app.run(debug=True)

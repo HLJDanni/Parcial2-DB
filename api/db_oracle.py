@@ -34,6 +34,8 @@ def get_asuntos():
             asuntos.append(row_dict)
         return asuntos
 
+
+
     except Exception as e:
         return {"error": str(e)}
     finally:

@@ -20,7 +20,8 @@ class OracleChangeTracker:
             'clientes': datetime.min,
             'procuradores': datetime.min,
             'abogados': datetime.min,
-            'asuntos': datetime.min
+            'asuntos': datetime.min,
+            'audiencia': datetime.min  # <-- AÑADIR ESTO
         }
 
     def check_changes(self, oracle_conn):
@@ -138,7 +139,8 @@ def setup_oracle_triggers(oracle_conn):
         'clientes': {'id_column': 'cliente_id'},
         'procuradores': {'id_column': 'procurador_id'},
         'abogados': {'id_column': 'abogado_id'},
-        'asuntos': {'id_column': 'expediente_id'}
+        'asuntos': {'id_column': 'expediente_id'},
+        'audiencia': {'id_column': 'audiencia_id'}  # <-- AÑADIR ESTO
     }
 
     try:
@@ -219,7 +221,22 @@ def replicate_data():
         'asuntos': {
             'columns': ['expediente_id', 'cliente_id', 'descripcion', 'estado', 'fecha_inicio', 'fecha_final', 'LAST_MODIFIED'],
             'id_column': 'expediente_id'
+        },
+        'audiencia': {
+            'columns': [
+                'audiencia_id',
+                'expediente_id',
+                'abogado_id',
+                'procurador_id',
+                'fecha_audiencia',
+                'tipo',
+                'resultado',
+                'observaciones',
+                'LAST_MODIFIED'
+            ],
+            'id_column': 'audiencia_id'
         }
+
     }
 
     change_tracker = OracleChangeTracker()
@@ -274,7 +291,7 @@ def replicate_data():
             if 'mysql_salvador_conn' in locals() and mysql_salvador_conn:
                 mysql_salvador_conn.close()
 
-        time.sleep(5)
+        time.sleep(15)
 
 if __name__ == "__main__":
     replicate_data()
